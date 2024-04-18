@@ -1,6 +1,7 @@
 package ac.su.springmvcinclass.controller;
 
-import ac.su.springmvcinclass.domain.User;
+import ac.su.springmvcinclass.domain.UserBmiDTO;
+import ac.su.springmvcinclass.domain.UserDTO;
 import ac.su.springmvcinclass.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,34 +23,34 @@ public class UserRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> allUsers = userService.getAllUsers();
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> allUsers = userService.getAllUsers();  // 1) 전체 리스트 User Entity 를 DTO 로 수신 필요
         return ResponseEntity.ok(allUsers);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.getUserByID(id);
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        UserDTO user = userService.getUserDTOByID(id);  // 2) 유저 개별 데이터를 DTO 로 수신 필요
         return ResponseEntity.ok(user);
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User savedUser = userService.createUser(user);
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO user) {
+        UserDTO savedUser = userService.createUser(user);  // 3) 유저 생성 데이터도 DTO 로 Service 에 전달
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        User updatedUser = userService.updateUser(id, user);
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO user) {
+        UserDTO updatedUser = userService.updateUser(id, user);  // 4) 유저 업데이트도 DTO 로 전달
         return ResponseEntity.ok(updatedUser);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<User> patchUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<UserDTO> patchUser(@PathVariable Long id, @RequestBody UserDTO user) {
         // 변경 하고자 하는 필드명 targetFields = [ fieldA, fieldB, ... ]
         // 규약에 명시된 제약 조건 외에는 자유도 있게 input - output 설계 가능!
-        User patchedUser = userService.patchUser(id, user);
+        UserDTO patchedUser = userService.patchUser(id, user);  // 5) 유저 업데이트도 DTO 로 전달
         return ResponseEntity.ok(patchedUser);
     }
 
@@ -81,5 +82,17 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
             .headers(headers)
             .body(responseBody);
+    }
+
+    @GetMapping("/bmi")
+    public ResponseEntity<List<UserBmiDTO>> getAllUsersWithBmi() {
+        List<UserBmiDTO> users = userService.findAllUserWithBmi();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{id}/bmi")
+    public ResponseEntity<UserBmiDTO> getUserWithBmi(@PathVariable Long id) {
+        UserBmiDTO user = userService.findUserBmiDTOById(id);
+        return ResponseEntity.ok(user);
     }
 }
